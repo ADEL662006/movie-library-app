@@ -71,21 +71,33 @@ class _HomePageState extends State<HomePage> {
             child: filteredMovies.isEmpty
                 ? const Center(child: Text('No movies found'))
                 : isGrid
-                ? GridView.builder(
-              padding: const EdgeInsets.all(12),
-              gridDelegate:
-              const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.62,
-              ),
-              itemCount: filteredMovies.length,
-              itemBuilder: (context, index) {
-                return MovieCard(
-                  movie: filteredMovies[index],
-                  discount: discount,
-                  onDiscountTap: decreaseDiscount,
+                ? LayoutBuilder(
+              builder: (context, constraints) {
+                // 3 columns, and exactly 2 rows visible on screen
+                const double pad = 12;
+                const double gap = 12;
+                final itemWidth =
+                    (constraints.maxWidth - pad * 2 - gap * 2) / 3;
+                final itemHeight =
+                    (constraints.maxHeight - pad * 2 - gap) / 2;
+
+                return GridView.builder(
+                  padding: const EdgeInsets.all(pad),
+                  gridDelegate:
+                  SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: gap,
+                    mainAxisSpacing: gap,
+                    childAspectRatio: itemWidth / itemHeight,
+                  ),
+                  itemCount: filteredMovies.length,
+                  itemBuilder: (context, index) {
+                    return MovieCard(
+                      movie: filteredMovies[index],
+                      discount: discount,
+                      onDiscountTap: decreaseDiscount,
+                    );
+                  },
                 );
               },
             )
@@ -96,11 +108,12 @@ class _HomePageState extends State<HomePage> {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: SizedBox(
-                    height: 320,
+                    height: 140,
                     child: MovieCard(
                       movie: filteredMovies[index],
                       discount: discount,
                       onDiscountTap: decreaseDiscount,
+                      isList: true,
                     ),
                   ),
                 );
